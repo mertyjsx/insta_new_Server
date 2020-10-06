@@ -5,7 +5,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./userModel");
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 const Arrayid = [];
 
@@ -47,27 +47,43 @@ function sleep(ms) {
     }
   });
 } */
-function start(cookie) {
+
+const getUsers=async ()=>{
+
+return await User.find({}, async (err, data) => {
+    if (err) {
+      console.log(err);
+    } else {
+      
+     
+    }
+  });
+}
+
+
+
+
+function start(cookie,body) {
+  
   User.find({}, async (err, data) => {
     if (err) {
       console.log(err);
     } else {
       await data.map((item) => Arrayid.push(item));
-      follow(cookie);
+      follow(cookie,body);
     }
   });
 }
-async function follow(headers) {
+async function follow(headers,body) {
   console.log("Başladı");
   await sleep(2000);
   console.log("Two seconds later, showing sleep in a loop...");
 
   // Sleep in loop
   for (let i = 0; i < Arrayid.length; i++) {
-    console.log(Arrayid[i]);
-console.log(headers)
+
     if (!Arrayid[i].followed) {
-      await sleep(12000);
+      
       axios({
         method: "post", //you can set what request you want to be
         url: `https://www.instagram.com/web/friendships/${Arrayid[i].id}/follow/`,
@@ -75,9 +91,21 @@ console.log(headers)
         headers: headers
       })
         .then((response) => {
-          console.log(response);
+         
+         
+       
+          User.updateOne(
+            { _id: Arrayid[i]._id }, // Filter
+            { $set: { followed: true,log:response.data.result,time: new Date(),account:body.query.account } } // Update
+          )
+            .then((obj) =>    console.log("updated"))
+            .catch((err) => console.log(err));
+    
+
+
         })
         .catch((e) => console.log(e));
+        await sleep(180000);
     }
   }
 }
@@ -183,7 +211,13 @@ function showid(array, cookie) {
   });
 }
  */
-//app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/info',async (req, res) =>{
+
+const users= await getUsers()
+console.log(users)
+res.status(200).send({users:users})
+
+})
 app.post("/follow", async (req, res) => {
 
 
@@ -193,7 +227,7 @@ app.post("/follow", async (req, res) => {
 
 
 
-  start(req.headers).then(() => res.send("basladı"));
+  start(req.headers,req).then(() => res.send("basladı"));
 });
 
 app.listen(port, () =>
