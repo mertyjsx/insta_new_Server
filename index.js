@@ -59,20 +59,22 @@ return await User.find({}, async (err, data) => {
     }
   });
 }
+const getOneUser=async ()=>{
 
+  return await User.findOne({ followed: false }, function (err, adventure) {
+
+
+  });
+    
+  }
+  
 
 
 
 function start(cookie,body) {
   
-  User.find({}, async (err, data) => {
-    if (err) {
-      console.log(err);
-    } else {
-      await data.map((item) => Arrayid.push(item));
-      follow(cookie,body);
-    }
-  });
+  follow(cookie,body);
+  
 }
 async function follow(headers,body) {
   console.log("Başladı");
@@ -80,34 +82,50 @@ async function follow(headers,body) {
   console.log("Two seconds later, showing sleep in a loop...");
 
   // Sleep in loop
-  for (let i = 0; i < Arrayid.length; i++) {
+ const interval=setInterval(async () => {
+  
+    const user= await getOneUser()
+    console.log(user)
+  
+    axios({
+      method: "post", //you can set what request you want to be
+      url: `https://www.instagram.com/web/friendships/${user.id}/follow/`,
 
-    if (!Arrayid[i].followed) {
-      
-      axios({
-        method: "post", //you can set what request you want to be
-        url: `https://www.instagram.com/web/friendships/${Arrayid[i].id}/follow/`,
-
-        headers: headers
-      })
-        .then((response) => {
-         
-         
+      headers: headers
+    })
+      .then((response) => {
        
-          User.updateOne(
-            { _id: Arrayid[i]._id }, // Filter
-            { $set: { followed: true,log:response.data.result,time: new Date(),account:body.query.account } } // Update
-          )
-            .then((obj) =>    console.log("updated"))
-            .catch((err) => console.log(err));
-    
+       console.log(response.data)
+     console.log(body.query.account)
+
+     if(response.data.result==="following"||response.data.result==="requested"){
+      User.updateOne(
+        { _id: user._id }, // Filter
+        { $set: { followed: true,log:response.data.result,time: new Date(),account:body.query.account } } // Update
+      )
+        .then((obj) =>    console.log("updated"))
+        .catch((err) => console.log(err));
 
 
-        })
-        .catch((e) => console.log(e));
-        await sleep(180000);
-    }
-  }
+     }
+
+      
+  
+
+
+      })
+      .catch((e) => console.log(e));
+      
+
+
+
+
+
+
+ }, 30000);
+      
+     
+ 
 }
 
 function showid(array, cookie) {
@@ -231,5 +249,8 @@ app.post("/follow", async (req, res) => {
 });
 
 app.listen(port, () =>
+{
+
   console.log(`Example app listening at http://localhost:${port}`)
+}
 );
