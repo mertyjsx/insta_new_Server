@@ -96,9 +96,9 @@ const getOneUser=async ()=>{
 
 
 
-function start(cookie,body) {
+function start(cookie,body,res) {
   
-  follow(cookie,body);
+  follow(cookie,body,res);
   
 }
 async function follow(headers,body) {
@@ -119,7 +119,7 @@ async function follow(headers,body) {
       headers: headers
     })
       .then((response) => {
-       
+       res.send(response)
        console.log(response.data)
      console.log(body.query.account)
 
@@ -129,7 +129,7 @@ async function follow(headers,body) {
         { $set: { followed: true,log:response.data.result,time: new Date(),account:body.query.account } } // Update
       )
         .then((obj) =>    console.log("updated"))
-        .catch((err) => console.log(err));
+        .catch((err) => res.send(response));
 
 
      }
@@ -275,7 +275,7 @@ app.post("/follow", async (req, res) => {
 
 
 
-  start(req.headers,req).then(() => res.send("basladı"));
+  start(req.headers,req,res).then(() => res.send("basladı"));
 });
 
 app.listen(port, () =>
