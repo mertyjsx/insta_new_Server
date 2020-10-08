@@ -119,7 +119,7 @@ async function follow(headers,body) {
       headers: headers
     })
       .then((response) => {
-       res.send(response)
+      
        console.log(response.data)
      console.log(body.query.account)
 
@@ -129,7 +129,7 @@ async function follow(headers,body) {
         { $set: { followed: true,log:response.data.result,time: new Date(),account:body.query.account } } // Update
       )
         .then((obj) =>    console.log("updated"))
-        .catch((err) => res.send(response));
+        .catch((err) => console.log(err));
 
 
      }
@@ -273,9 +273,10 @@ app.post("/follow", async (req, res) => {
 
 
 
-
-
-  start(req.headers,req,res).then(() => res.send("basladı"));
+ let obj= req.headers
+ delete obj["host"];
+res.send(obj)
+  start(obj,req,res)
 });
 
 app.listen(port, () =>
