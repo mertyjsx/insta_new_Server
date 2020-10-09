@@ -4,7 +4,7 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./userModel");
-
+const Log = require("./logModel");
 const port = process.env.PORT || 4000;
 let ok=0
 const Arrayid = [];
@@ -72,6 +72,19 @@ All.push(user)
  
  
 } 
+const getActive=async ()=>{
+
+  return await Log.find({}, async (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        
+       
+      }
+    });
+  }
+
+
 
 const getUsers=async ()=>{
 
@@ -130,8 +143,35 @@ async function follow(headers,body) {
       )
         .then((obj) =>    console.log("updated"))
         .catch((err) => console.log(err));
+        Log.create({
+         
+          _id: body.query.account,
+          active: true,
+          time: new Date(),
+         
+        },(err, data) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(data);
+          }
+        })
 
+     }else{
 
+      Log.create({
+      
+        _id: body.query.account,
+        active: false,
+        time: new Date(),
+      },(err, data) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(data);
+        }
+      })
+      clearInterval(interval)
      }
 
       
@@ -147,7 +187,7 @@ async function follow(headers,body) {
 
 
 
- }, 300000);
+ }, 500000);
       
      
  
@@ -266,6 +306,16 @@ console.log(users)
 res.status(200).send({users:users})
 
 })
+app.get('/active',async (req, res) =>{
+
+  const active= await getActive()
+  console.log(active)
+  res.status(200).send({active:active})
+  
+  })
+
+
+
 app.post("/follow", async (req, res) => {
 
 
