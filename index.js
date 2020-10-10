@@ -5,9 +5,9 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./userModel");
 const Log = require("./logModel");
+let interval=0
 const port = process.env.PORT || 4000;
 let ok=0
-let timeOut=1200000
 const Arrayid = [];
 let All=[]
 app.use(cors());
@@ -73,7 +73,17 @@ All.push(user)
  
  
 } 
+const getActive=async ()=>{
 
+  return await Log.find({}, async (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        
+       
+      }
+    });
+  }
 const getUsers=async ()=>{
 
 return await User.find({}, async (err, data) => {
@@ -94,21 +104,7 @@ const getOneUser=async ()=>{
     
   }
   
-
-
-
-function start(cookie,body,res) {
-  
-  follow(cookie,body,res);
-  
-}
-async function follow(headers,body) {
-  console.log("Başladı");
-  await sleep(2000);
-  console.log("Two seconds later, showing sleep in a loop...");
-
-  // Sleep in loop
- const interval=setInterval(async () => {
+ const int= async (headers,body) => {
   
     const user= await getOneUser()
     console.log(user)
@@ -120,7 +116,7 @@ async function follow(headers,body) {
       headers: headers
     })
       .then((response) => {
-      timeOut=1200000
+      
       console.log(response)
      console.log("buraya girebilir")
 
@@ -161,7 +157,7 @@ async function follow(headers,body) {
 
      }else{
       console.log("buraya giremez")
-      Log.findOne({_id:body.query.account},(err,res)=> {
+      Log.findOne({_id:body.query.account},async (err,res)=> {
         console.log(err)
         console.log(res)
         if(!res){
@@ -182,20 +178,25 @@ async function follow(headers,body) {
             { _id: body.query.account }, // Filter
             { $set: {active:false,time: new Date()} } // Update
           )
-            .then((obj) =>    console.log("updated"))
+            .then(async (obj) =>    console.log("Ok"))
             .catch((err) => console.log("181",err));
         }
       })
-      timeOut=1800000
+      clearInterval(interval)
+    
 
+
+      interval=setInterval(()=>int(headers,body), 1800000);
+
+  
      }
 
       
   
-
+    
 
       })
-      .catch((e) => {
+      .catch(async (e) => {
 console.log(e)
 
         Log.findOne({_id:body.query.account},(err,res)=> {
@@ -223,17 +224,18 @@ console.log(e)
               .catch((err) => console.log("181",err));
           }
         })
-      timeOut=1800000
+      clearInterval(interval)
+    
+
+
+  console.log("burası")
+   interval=setInterval(()=>int(headers,body), 1800000);
 
 
 
 
 
-
-
-
-
-
+   
 
       });
       
@@ -242,8 +244,23 @@ console.log(e)
 
 
 
+    
 
- }, timeOut);
+ }
+
+
+function start(cookie,body,res) {
+  
+  follow(cookie,body,res);
+  
+}
+async function follow(headers,body) {
+  console.log("Başladı");
+  await sleep(2000);
+  console.log("Two seconds later, showing sleep in a loop...");
+
+  // Sleep in loop
+  interval=setInterval(()=>int(headers,body), 1800000);
       
      
  
@@ -362,6 +379,22 @@ console.log(users)
 res.status(200).send({users:users})
 
 })
+
+app.get('/active',async (req, res) =>{
+
+  const active= await getActive()
+  console.log(active)
+  res.status(200).send({active:active})
+  
+  })
+
+
+
+
+
+
+
+
 app.post("/follow", async (req, res) => {
 
 
