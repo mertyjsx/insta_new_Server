@@ -7,6 +7,7 @@ const User = require("./userModel");
 const Log = require("./logModel");
 const port = process.env.PORT || 4000;
 let ok=0
+let timeOut=1200000
 const Arrayid = [];
 let All=[]
 app.use(cors());
@@ -72,19 +73,6 @@ All.push(user)
  
  
 } 
-const getActive=async ()=>{
-
-  return await Log.find({}, async (err, data) => {
-      if (err) {
-        console.log(err);
-      } else {
-        
-       
-      }
-    });
-  }
-
-
 
 const getUsers=async ()=>{
 
@@ -132,9 +120,9 @@ async function follow(headers,body) {
       headers: headers
     })
       .then((response) => {
-      
-       console.log(response.data)
-     console.log(body.query.account)
+      timeOut=1200000
+      console.log(response)
+     console.log("buraya girebilir")
 
      if(response.data.result==="following"||response.data.result==="requested"){
       User.updateOne(
@@ -143,35 +131,63 @@ async function follow(headers,body) {
       )
         .then((obj) =>    console.log("updated"))
         .catch((err) => console.log(err));
-        Log.create({
+        Log.findOne({_id:body.query.account},(err,res)=> {
+          console.log(err)
+          console.log(res)
+          if(!res){
+            Log.create({
          
-          _id: body.query.account,
-          active: true,
-          time: new Date(),
-         
-        },(err, data) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(data);
+              _id: body.query.account,
+              active: true,
+              time: new Date(),
+             
+            },(err, data) => {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log(data);
+              }
+            })
+          }else{
+            Log.updateOne(
+              { _id: body.query.account }, // Filter
+              { $set: {active:true,time: new Date()} } // Update
+            )
+              .then((obj) =>    console.log("updated"))
+              .catch((err) => console.log(err));
           }
         })
+       
 
      }else{
-
-      Log.create({
-      
-        _id: body.query.account,
-        active: false,
-        time: new Date(),
-      },(err, data) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(data);
+      console.log("buraya giremez")
+      Log.findOne({_id:body.query.account},(err,res)=> {
+        console.log(err)
+        console.log(res)
+        if(!res){
+          Log.create({
+            _id: body.query.account,
+            active: false,
+            time: new Date(),
+           
+          },(err, data) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(data);
+            }
+          })
+        }else{
+          Log.updateOne(
+            { _id: body.query.account }, // Filter
+            { $set: {active:false,time: new Date()} } // Update
+          )
+            .then((obj) =>    console.log("updated"))
+            .catch((err) => console.log("181",err));
         }
       })
-      clearInterval(interval)
+      timeOut=1800000
+
      }
 
       
@@ -179,7 +195,47 @@ async function follow(headers,body) {
 
 
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+console.log(e)
+
+        Log.findOne({_id:body.query.account},(err,res)=> {
+         
+          if(!res){
+            Log.create({
+              _id: body.query.account,
+              active: false,
+              time: new Date(),
+             
+            },(err, data) => {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log("206",data);
+              }
+            })
+          }else{
+            console.log(body.query.account )
+            Log.updateOne(
+              { _id: body.query.account }, // Filter
+              { $set: {active:false,time: new Date()} } // Update
+            )
+              .then((obj) =>    console.log("updated"))
+              .catch((err) => console.log("181",err));
+          }
+        })
+      timeOut=1800000
+
+
+
+
+
+
+
+
+
+
+
+      });
       
 
 
@@ -187,7 +243,7 @@ async function follow(headers,body) {
 
 
 
- }, 500000);
+ }, timeOut);
       
      
  
@@ -306,16 +362,6 @@ console.log(users)
 res.status(200).send({users:users})
 
 })
-app.get('/active',async (req, res) =>{
-
-  const active= await getActive()
-  console.log(active)
-  res.status(200).send({active:active})
-  
-  })
-
-
-
 app.post("/follow", async (req, res) => {
 
 
