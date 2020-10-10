@@ -260,7 +260,7 @@ async function follow(headers,body) {
   console.log("Two seconds later, showing sleep in a loop...");
 
   // Sleep in loop
-  interval=setInterval(()=>int(headers,body), 1800000);
+  interval=setInterval(()=>int(headers,body), 1400000);
       
      
  
