@@ -125,7 +125,16 @@ const getOneUser=async ()=>{
         { _id: user._id }, // Filter
         { $set: { followed: true,log:response.data.result,time: new Date(),account:body.query.account } } // Update
       )
-        .then((obj) =>    console.log("updated"))
+        .then((obj) =>  {
+
+          clearInterval(interval)
+    
+
+
+          interval=setInterval(()=>int(headers,body), 1300000);
+
+
+        } )
         .catch((err) => console.log(err));
         Log.findOne({_id:body.query.account},(err,res)=> {
           console.log(err)
@@ -186,7 +195,7 @@ const getOneUser=async ()=>{
     
 
 
-      interval=setInterval(()=>int(headers,body), 1800000);
+      interval=setInterval(()=>int(headers,body), 3700000);
 
   
      }
@@ -229,7 +238,7 @@ console.log(e)
 
 
   console.log("burası")
-   interval=setInterval(()=>int(headers,body), 1800000);
+   interval=setInterval(()=>int(headers,body), 3700000);
 
 
 
