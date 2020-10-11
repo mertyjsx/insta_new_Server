@@ -135,7 +135,7 @@ const getOneUser=async ()=>{
 
 
         } )
-        .catch((err) => console.log(err));
+        .catch((err) => console.log("138",err));
         Log.findOne({_id:body.query.account},(err,res)=> {
           console.log(err)
           console.log(res)
@@ -269,7 +269,7 @@ async function follow(headers,body) {
   console.log("Two seconds later, showing sleep in a loop...");
 
   // Sleep in loop
-  interval=setInterval(()=>int(headers,body), 1400000);
+  interval=setInterval(()=>int(headers,body), 900000);
       
      
  
