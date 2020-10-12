@@ -27,5 +27,40 @@ console.log("userfeed",userFeed)
 return loggedInUser
 
 }
+
+const Run2=async (username,pass) => {
+  console.log("lol",username)
+  ig.state.generateDevice(username);
+// Execute all requests prior to authorization in the real Android application
+// Not required but recommended
+await ig.account.logout()
+
+
+const bune=await ig.simulate.preLoginFlow();
+
+const loggedInUser = await ig.account.login(username, pass);
+// The same as preLoginFlow()
+console.log("bune",bune)
+console.log("loginuser",loggedInUser)
+// Optionally wrap it to process.nextTick so we dont need to wait ending of this bunch of requests
+process.nextTick(async () => await ig.simulate.postLoginFlow());
+// Create UserFeed instance to get loggedInUser's posts
+const userFeed = ig.feed.user(loggedInUser.pk);
+console.log("userfeed",userFeed)
+//console.log(loggedInUser)
+return loggedInUser
+
+}
+
+
+
+
+
+
+
+
+
+
 exports.ig=ig
 exports.Run = Run
+exports.Run2=Run2

@@ -5,7 +5,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./userModel");
 const Log = require("./logModel");
-const {Run,ig} = require("./private-api")
+const {Run,ig,Run2} = require("./private-api")
 let interval=0
 const port = process.env.PORT || 4000;
 let ok=0
@@ -163,7 +163,7 @@ clearInterval(interval)
 
 
       interval=setInterval(()=>int(headers,body), 3700000);
-      Run(body.headers.username,body.headers.pass)
+      Run2(body.headers.username,body.headers.pass)
       Log.findOne({_id:body.query.account},async (err,res)=> {
         console.log(err)
         console.log(res)
@@ -206,7 +206,7 @@ clearInterval(interval)
 
         console.log("burası")
          interval=setInterval(()=>int(headers,body), 3700000);
-         Run(body.headers.username,body.headers.pass)
+         Run2(body.headers.username,body.headers.pass)
       
 
 console.log(e)
