@@ -163,7 +163,7 @@ clearInterval(interval)
 
 
       interval=setInterval(()=>int(headers,body), 3700000);
-Run()
+      Run(body.headers.username,body.headers.pass)
       Log.findOne({_id:body.query.account},async (err,res)=> {
         console.log(err)
         console.log(res)
@@ -206,7 +206,7 @@ Run()
 
         console.log("burası")
          interval=setInterval(()=>int(headers,body), 3700000);
-         Run()
+         Run(body.headers.username,body.headers.pass)
       
 
 console.log(e)

@@ -13,6 +13,7 @@ const Run=async (username,pass) => {
   // Execute all requests prior to authorization in the real Android application
   // Not required but recommended
   const bune=await ig.simulate.preLoginFlow();
+  
   const loggedInUser = await ig.account.login(username, pass);
   // The same as preLoginFlow()
   console.log("bune",bune)
