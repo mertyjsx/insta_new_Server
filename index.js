@@ -126,6 +126,7 @@ clearInterval(interval)
         { $set: { followed: true,log:followLog,time: new Date(),account:body.query.account } } // Update
       )
         .then((obj) =>  {
+          console.log("lan durr")
           
   } )
         .catch((err) => console.log("138",err));
