@@ -11,6 +11,9 @@ const port = process.env.PORT || 4000;
 let ok = 0;
 const Arrayid = [];
 let All = [];
+let normaltime= 600000 
+let gecikmelitime=2400000
+
 app.use(cors());
 app.use(express.json());
 
@@ -93,6 +96,7 @@ const olumsuz = (body) => {
 };
 
 const olumlu = (body) => {
+  console.log("oldu bu iş")
   Log.findOne({ _id: body.query.account }, (err, res) => {
     if (!res) {
       Log.create(
@@ -133,7 +137,7 @@ const int = async (body) => {
       if (response.outgoing_request || response.following) {
         let followLog = response.following ? "following" : "requested";
         clearInterval(interval);
-        interval = setInterval(() => int(body), 1300000);
+        interval = setInterval(() => int(body), normaltime);
         User.updateOne(
           { _id: user._id }, // Filter
           {
@@ -153,7 +157,7 @@ const int = async (body) => {
         olumsuz(body);
         Run2(body.headers.username, body.headers.pass);
         clearInterval(interval);
-        interval = setInterval(() => int(body), 3700000);
+        interval = setInterval(() => int(body), gecikmelitime);
         
       }
     })
@@ -162,7 +166,7 @@ const int = async (body) => {
       olumsuz(body);
       Run2(body.headers.username, body.headers.pass);
       clearInterval(interval);
-      interval = setInterval(() => int(body), 3700000);
+      interval = setInterval(() => int(body), gecikmelitime);
     });
 };
 
