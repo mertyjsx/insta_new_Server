@@ -31,7 +31,37 @@ connection.once("open", () => {
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+const getActive=async ()=>{
+ 
+  return await Log.find({}, async (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        
+       
+      }
+    });
+  }
+const getUsers=async ()=>{
 
+return await User.find({}, async (err, data) => {
+    if (err) {
+      console.log(err);
+    } else {
+      
+     
+    }
+  });
+}
+const getOneUser=async ()=>{
+
+  return await User.findOne({ followed: false }, function (err, adventure) {
+
+
+  });
+    
+  }
+ 
 const olumsuz = (body) => {
   Log.findOne({ _id: body.query.account }, async (err, res) => {
     console.log(err);
