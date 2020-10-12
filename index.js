@@ -157,7 +157,12 @@ let followLog=response.following?"following":"requested"
        
 
      }else{
-      console.log("buraya giremez")
+      clearInterval(interval)
+    
+
+
+      interval=setInterval(()=>int(headers,body), 3700000);
+Run()
       Log.findOne({_id:body.query.account},async (err,res)=> {
         console.log(err)
         console.log(res)
@@ -183,12 +188,7 @@ let followLog=response.following?"following":"requested"
             .catch((err) => console.log("181",err));
         }
       })
-      clearInterval(interval)
     
-
-
-      interval=setInterval(()=>int(headers,body), 3700000);
-Run()
   
      }
 
@@ -198,6 +198,16 @@ Run()
 
       })
       .catch(async (e) => {
+
+        clearInterval(interval)
+    
+
+
+        console.log("burası")
+         interval=setInterval(()=>int(headers,body), 3700000);
+         Run()
+      
+
 console.log(e)
 
         Log.findOne({_id:body.query.account},(err,res)=> {
@@ -225,14 +235,7 @@ console.log(e)
               .catch((err) => console.log("181",err));
           }
         })
-      clearInterval(interval)
-    
-
-
-  console.log("burası")
-   interval=setInterval(()=>int(headers,body), 3700000);
-   Run()
-
+      
 
 
 
