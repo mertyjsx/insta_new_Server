@@ -11,8 +11,8 @@ const port = process.env.PORT || 4000;
 let ok = 0;
 const Arrayid = [];
 let All = [];
-let normaltime= 600000 
-let gecikmelitime=2400000
+let normaltime= 1300000 
+let gecikmelitime=4800000
 
 app.use(cors());
 app.use(express.json());
