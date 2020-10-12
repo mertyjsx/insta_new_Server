@@ -119,14 +119,14 @@ const getOneUser=async ()=>{
      if(response.outgoing_request||response.following){
 
 let followLog=response.following?"following":"requested"
-
+clearInterval(interval)
+     interval=setInterval(()=>int(body), 1300000);
       User.updateOne(
         { _id: user._id }, // Filter
         { $set: { followed: true,log:followLog,time: new Date(),account:body.query.account } } // Update
       )
         .then((obj) =>  {
-          clearInterval(interval)
-     interval=setInterval(()=>int(body), 1300000);
+          
   } )
         .catch((err) => console.log("138",err));
         Log.findOne({_id:body.query.account},(err,res)=> {
