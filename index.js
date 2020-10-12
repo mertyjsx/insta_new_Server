@@ -399,11 +399,13 @@ console.log(req.headers.username)
 
   Run(req.headers.username,req.headers.pass).then((response)=>
   {
-if(response){
+if(response.pk){
 
 res.send("ok")
 follow(req)
 
+}else{
+  res.send("not ok")
 }
 
 
