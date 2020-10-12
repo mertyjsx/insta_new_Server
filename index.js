@@ -136,8 +136,9 @@ const int = async (body) => {
 
       if (response.outgoing_request || response.following) {
         let followLog = response.following ? "following" : "requested";
-        clearInterval(interval);
-        interval = setInterval(() => int(body), normaltime);
+        setTimeout(() => {
+          int(body)
+        }, normaltime);
         User.updateOne(
           { _id: user._id }, // Filter
           {
@@ -155,18 +156,20 @@ const int = async (body) => {
      
 
         olumsuz(body);
-        Run2(body.headers.username, body.headers.pass);
-        clearInterval(interval);
-        interval = setInterval(() => int(body), gecikmelitime);
+      //  Run2(body.headers.username, body.headers.pass);
+        setTimeout(() => {
+          int(body)
+        }, gecikmelitime);
         
       }
     })
     .catch(async (e) => {
-    
+  
       olumsuz(body);
-      Run2(body.headers.username, body.headers.pass);
-      clearInterval(interval);
-      interval = setInterval(() => int(body), gecikmelitime);
+    //  Run2(body.headers.username, body.headers.pass);
+   setTimeout(() => {
+     int(body)
+   }, gecikmelitime);
     });
 };
 
@@ -176,7 +179,7 @@ async function follow(body) {
   console.log("Two seconds later, showing sleep in a loop...");
 
   // Sleep in loop
-  interval = setInterval(() => int(body), 12000);
+  int(body)
 
   console.log("hhh");
 }
