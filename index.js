@@ -5,6 +5,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./userModel");
 const Log = require("./logModel");
+const {Run,ig} = require("./private-api")
 let interval=0
 const port = process.env.PORT || 4000;
 let ok=0
@@ -104,41 +105,32 @@ const getOneUser=async ()=>{
     
   }
   
- const int= async (headers,body) => {
+ const int= async (body) => {
   
     const user= await getOneUser()
     console.log(user)
   
-    axios({
-      method: "post", //you can set what request you want to be
-      url: `https://www.instagram.com/web/friendships/${user.id}/follow/`,
-
-      headers: headers
-    })
+   ig.friendship.create(user.id)
       .then((response) => {
       
-      console.log(response)
+      console.log("bura önemli",response)
      console.log("buraya girebilir")
 
-     if(response.data.result==="following"||response.data.result==="requested"){
+     if(response.outgoing_request||response.following){
+
+let followLog=response.following?"following":"requested"
+
       User.updateOne(
         { _id: user._id }, // Filter
-        { $set: { followed: true,log:response.data.result,time: new Date(),account:body.query.account } } // Update
+        { $set: { followed: true,log:followLog,time: new Date(),account:body.query.account } } // Update
       )
         .then((obj) =>  {
-
           clearInterval(interval)
-    
-
-
-          interval=setInterval(()=>int(headers,body), 1300000);
-
-
-        } )
+     interval=setInterval(()=>int(body), 1300000);
+  } )
         .catch((err) => console.log("138",err));
         Log.findOne({_id:body.query.account},(err,res)=> {
-          console.log(err)
-          console.log(res)
+         
           if(!res){
             Log.create({
          
@@ -196,7 +188,7 @@ const getOneUser=async ()=>{
 
 
       interval=setInterval(()=>int(headers,body), 3700000);
-
+Run()
   
      }
 
@@ -239,7 +231,7 @@ console.log(e)
 
   console.log("burası")
    interval=setInterval(()=>int(headers,body), 3700000);
-
+   Run()
 
 
 
@@ -258,18 +250,14 @@ console.log(e)
  }
 
 
-function start(cookie,body,res) {
-  
-  follow(cookie,body,res);
-  
-}
-async function follow(headers,body) {
+
+async function follow(body) {
   console.log("Başladı");
   await sleep(2000);
   console.log("Two seconds later, showing sleep in a loop...");
 
   // Sleep in loop
-  interval=setInterval(()=>int(headers,body), 900000);
+  interval=setInterval(()=>int(body), 12000);
       
      
  
@@ -405,16 +393,26 @@ app.get('/active',async (req, res) =>{
 
 
 app.post("/follow", async (req, res) => {
+console.log("burası follow")
+console.log(req.headers.username)
+
+
+  Run(req.headers.username,req.headers.pass).then((response)=>
+  {
+if(response){
+
+res.send("ok")
+follow(req)
+
+}
+
+
+  })
 
 
 
 
-
-
- let obj= req.headers
- delete obj["host"];
-res.send(obj)
-  start(obj,req,res)
+  
 });
 
 app.listen(port, () =>
@@ -422,8 +420,8 @@ app.listen(port, () =>
 setTimeout(() => {
 //User.deleteMany().then(e=>console.log(e))
  //pullUsers("necklacesofficial",' ig_did=1B6DD261-B5CD-4B9C-BD54-F92D2F1A381E; mid=Xy1jHAALAAFGGg1b9oim18euAcN6; fbm_124024574287414=base_domain=.instagram.com; datr=7CxEXygCWAWwj8_G6630yIUB; rur=RVA; ig_gdpr_signup=%7B%22count%22%3A2%2C%22timestamp%22%3A1601977913136%7D; ig_nrcb=1; fbsr_124024574287414=7IdbY9o0sgYpCl-DfM7ks2DfpHxY7RohWZ0kKPl4geM.eyJ1c2VyX2lkIjoiMTI1NzY2NzQwMCIsImNvZGUiOiJBUUIyTnFpTG9kcGVhQnJwVVBOVE5mNldSOWVTNWc2V2FjRFF4VWFKYmR6TWw0ZGJDWTM5S2NGQ2RGeFNYeEVzdDhmcmtJV0taM3hDdXo3eE9MSDBRMFFXbnFxMm1reGlyVkZQbFhvYlUwa1RVZjdaWEFKNElrdWZsSVdjNmFCM19jRVBiQkloVUotdGQ5eUJiZ2hiY2Y1WnJhbEpRdEhWcmQ3SFZBZEJEWXBXbXFyaHdMX3AzTkU2Y0JmSGhHRkRJZHdIeVVsVHpFNzBQOXE0M2dlY3A0Vmh1ZHNMdXN0QmNfYkFSUDBQQzBZTzI4YThQbmNINEhfMXo5eVlQOS1zNXhvSmJkUE9CZ0NKZzZNRklzMkV6NGNaTTFTbHVMSU5BWVBiMG5ZcDFidmgxSHFtYWVfbk1kM2MwZE5XOEFIVEJWSSIsIm9hdXRoX3Rva2VuIjoiRUFBQnd6TGl4bmpZQkFKNG4xV0JaQVR0SjZBa1RaQmhkdmtKUUFuNjF1STJFelRZRlRsYkYwNjZYQmg3d1BGak91ZHZDZUhHZUJaQURJVHRqa1pBUTBNb2FjS1Q0Q2R4RHdMcTdUZ3JrQXdoVE5YTjVYSWlIZ0xuTUVJSDlIMDVlMnNYbVE2MnRlY2tYZzBQY2xMU1Byek9kRXJiclRaQ0dNR3NRU3BBaVFWZ1pEWkQiLCJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTYwMjA3NTM0NH0; csrftoken=Cf4JWvECIhzt77OrBomorhnVB3PaNFmZ; ds_user_id=43227602058; sessionid=43227602058%3A3lVzpvs27FhC3f%3A2; shbid=6407; shbts=1602083711.6219184; urlgen="{\"78.190.56.63\": 47331\054 \"46.155.41.28\": 15897}:1kQXpC:w3XnmEgyr9JHQ1SBNA7GlclWx2M"')
-  
-}, 10000);
+ //Run().then((response)=>follow())
+}, 2000);
   console.log(`Example app listening at http://localhost:${port}`)
 }
 );
