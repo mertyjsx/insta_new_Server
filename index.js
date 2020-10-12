@@ -394,11 +394,11 @@ app.get('/active',async (req, res) =>{
 
 app.post("/follow", async (req, res) => {
 console.log("burası follow")
-console.log(req.headers.username)
 
 
   Run(req.headers.username,req.headers.pass).then((response)=>
   {
+    console.log("bakbu",response)
 if(response.pk){
 
 res.send("ok")
@@ -409,7 +409,7 @@ follow(req)
 }
 
 
-  })
+  }).catch(e=> res.send("not ok"))
 
 
 

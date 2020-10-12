@@ -4,14 +4,16 @@ const ig = new IgApiClient();
 // You must generate device id's before login.
 // Id's generated based on seed
 // So if you pass the same value as first argument - the same id's are generated every time
-ig.state.generateDevice("handmade_anxiety_pendant_2");
+
 // Optionally you can setup proxy url
 
-const Run=async () => {
+const Run=async (username,pass) => {
+    console.log("lol",username)
+    ig.state.generateDevice(username);
   // Execute all requests prior to authorization in the real Android application
   // Not required but recommended
   const bune=await ig.simulate.preLoginFlow();
-  const loggedInUser = await ig.account.login("handmade_anxiety_pendant_3", "bugramert123");
+  const loggedInUser = await ig.account.login(username, pass);
   // The same as preLoginFlow()
   console.log("bune",bune)
   console.log("loginuser",loggedInUser)
