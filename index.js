@@ -75,6 +75,7 @@ const olumsuz = (body) => {
           _id: body.query.account,
           active: false,
           time: new Date(),
+          Proxy:ig.state.proxyUrl
         },
         (err, data) => {
           if (err) {
@@ -87,7 +88,7 @@ const olumsuz = (body) => {
     } else {
       Log.updateOne(
         { _id: body.query.account }, // Filter
-        { $set: { active: false, time: new Date() } } // Update
+        { $set: { active: false, time: new Date(),Proxy:ig.state.proxyUrl } } // Update
       )
         .then(async (obj) => console.log("Ok"))
         .catch((err) => console.log("181", err));
@@ -104,6 +105,7 @@ const olumlu = (body) => {
           _id: body.query.account,
           active: true,
           time: new Date(),
+          Proxy:ig.state.proxyUrl
         },
         (err, data) => {
           if (err) {
@@ -116,7 +118,7 @@ const olumlu = (body) => {
     } else {
       Log.updateOne(
         { _id: body.query.account }, // Filter
-        { $set: { active: true, time: new Date() } } // Update
+        { $set: { active: true, time: new Date() ,Proxy:ig.state.proxyUrl} } // Update
       )
         .then((obj) => console.log("updated"))
         .catch((err) => console.log(err));
@@ -200,17 +202,20 @@ app.get("/active", async (req, res) => {
 app.post("/follow", async (req, res) => {
   console.log("burası follow");
 
-  Run(req.headers.username, req.headers.pass)
+  Run(req.headers.username, req.headers.pass,follow,req)
     .then((response) => {
       console.log("bakbu", response);
       if (response.pk) {
         res.send("ok");
-        follow(req);
+        
       } else {
+        console.log(response)
         res.send("not ok");
       }
     })
-    .catch((e) => res.send("not ok"));
+    .catch((e) =>{ 
+      console.log(e)
+      res.send("not ok")});
 });
 
 app.listen(port, () => {

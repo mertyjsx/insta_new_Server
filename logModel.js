@@ -6,7 +6,8 @@ const logSchema = new Schema({
  
   active : Boolean,
   _id:String,
-  time : Date
+  time : Date,
+  proxy:String
 });
 
 const Log = mongoose.model("log", logSchema);
